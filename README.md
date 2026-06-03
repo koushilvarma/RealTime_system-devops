@@ -338,9 +338,3 @@ B.Tech CSE (Honors) | DevOps Enthusiast | Systems Engineering Aspirant
 
 ---
 
-## Resume Highlights
-
-- Built an end-to-end CI/CD pipeline using Jenkins, Docker, and Kubernetes.
-- Automated application build, testing, containerization, and deployment workflows.
-- Implemented Infrastructure-as-Code using Kubernetes manifests.
-- Demonstrated modern DevOps practices including CI/CD automation and container orchestration.
