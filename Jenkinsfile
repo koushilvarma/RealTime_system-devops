@@ -2,65 +2,40 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = 'docker.io'
-        IMAGE_NAME = 'cicd-kubernetes-app'
-        IMAGE_TAG = "${BUILD_NUMBER}"
-        NAMESPACE = 'default'
+        DOCKER_IMAGE = "koushilvarma/cicd-app"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
-                checkout scm
+                git branch: 'main',
+                url: 'https://github.com/koushilvarma/RealTime_system-devops.git'
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Building application...'
-                sh 'npm install'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                sh 'npm test || true'
+                bat 'npm install'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .'
-                sh 'docker tag ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY}/${IMAGE_NAME}:latest'
+                bat 'docker build -t %DOCKER_IMAGE%:latest .'
             }
         }
 
-        stage('Push to Registry') {
+        stage('Push Docker Image') {
             steps {
-                echo 'Pushing image to registry...'
-                sh 'docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}'
-                sh 'docker push ${REGISTRY}/${IMAGE_NAME}:latest'
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                echo 'Deploying to Kubernetes...'
-                sh 'kubectl set image deployment/cicd-app cicd-app=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n ${NAMESPACE} || kubectl apply -f k8s/'
-                sh 'kubectl rollout status deployment/cicd-app -n ${NAMESPACE}'
+                bat 'docker push %DOCKER_IMAGE%:latest'
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline execution completed.'
-        }
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
             echo 'Pipeline failed!'
