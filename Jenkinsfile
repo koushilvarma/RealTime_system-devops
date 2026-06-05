@@ -51,6 +51,13 @@ pipeline {
                 bat 'docker push %DOCKER_IMAGE%:latest'
             }
         }
+
+        stage('Test Kubernetes') {
+            steps {
+                echo 'Testing Kubernetes connection...'
+                bat 'kubectl get nodes'
+            }
+        }
     }
 
     post {
