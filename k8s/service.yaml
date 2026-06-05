@@ -1,17 +1,16 @@
 apiVersion: v1
 kind: Service
+
 metadata:
   name: cicd-app-service
-  namespace: default
-  labels:
-    app: cicd-app
+
 spec:
-  type: LoadBalancer
   selector:
     app: cicd-app
+
   ports:
-  - name: http
+  - protocol: TCP
     port: 80
     targetPort: 3000
-    protocol: TCP
-  sessionAffinity: None
+
+  type: LoadBalancer
