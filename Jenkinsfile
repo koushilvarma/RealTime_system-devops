@@ -31,8 +31,6 @@ pipeline {
 
         stage('Docker Login') {
             steps {
-                echo 'Logging into Docker Hub...'
-
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub',
@@ -47,20 +45,32 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                echo 'Pushing Docker image...'
                 bat 'docker push %DOCKER_IMAGE%:latest'
             }
         }
 
-        stage('Test Kubernetes') {
+        stage('Deploy to Kubernetes') {
             steps {
-                echo 'Testing Kubernetes connection...'
-                bat 'kubectl get nodes'
+                withCredentials([
+                    file(
+                        credentialsId: 'kubeconfig',
+                        variable: 'KUBECONFIG_FILE'
+                    )
+                ]) {
+
+                    bat '''
+                    set KUBECONFIG=%KUBECONFIG_FILE%
+                    kubectl apply -f k8s\\deployment.yaml
+                    kubectl apply -f k8s\\service.yaml
+                    kubectl rollout restart deployment/cicd-app
+                    '''
+                }
             }
         }
     }
 
     post {
+
         success {
             echo 'Pipeline completed successfully!'
         }
