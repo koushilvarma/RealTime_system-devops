@@ -20,5 +20,6 @@ spec:
       containers:
       - name: cicd-app
         image: koushilvarma/cicd-app:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
