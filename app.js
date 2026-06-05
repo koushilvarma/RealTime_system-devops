@@ -12,3 +12,6 @@ app.listen(3000, () => {
 app.get('/k8s', (req, res) => {
     res.send("Hello from Kubernetes v2");
 });
+app.get('/webhook', (req, res) => {
+    res.send("Webhook Auto Trigger Test");
+});
